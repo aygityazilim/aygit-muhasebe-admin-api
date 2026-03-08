@@ -1,0 +1,5 @@
+from .contract_verification import ContractVerificationRepository
+from .document import DocumentRepository
+from .pre_registiration import PreRegistirationRepository
+from .pre_regsitiration_history import PreRegistirationHistoryRepository
+from .user import UserRepository

@@ -1,0 +1,54 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# Alembic migration artifacts
+alembic/versions/*.pyc
+alembic/versions/__pycache__/
+
+# Editor & system files
+.DS_Store
+.vscode/
+.idea/
+
+# Logs and local files
+*.log
+*.sqlite3
+
+# Pytest
+.pytest_cache/
+.coverage
+htmlcov/
+
+# MyPy, Pylint, etc.
+.mypy_cache/
+.dmypy.json
+.pyre/
+
+# Compiled C extensions
+*.so
+
+# dotenv
+.env
+.env.*
+
+# Docker
+*.pid
+docker-compose.override.yml
+firebase-service-account.json
+
+# Upload folders
+uploads/
+uploads-dev/
+
+
+sql/
+gib-output/

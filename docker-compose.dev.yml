@@ -1,0 +1,35 @@
+services:
+  admin-service:
+    container_name: aygit-muhasebe-dev-admin-service
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        ENVIRONMENT: dev
+    environment:
+      - ADMIN_DB_USER=${ADMIN_DB_USER}
+      - ADMIN_DB_PASSWORD=${ADMIN_DB_PASSWORD}
+      - ADMIN_DB_HOST=${ADMIN_DB_HOST}
+      - ADMIN_DB_REAL_HOST=${ADMIN_DB_REAL_HOST}
+      - ADMIN_DB_NAME=${ADMIN_DB_NAME}
+      - REGISTIRATION_DB_USER=${REGISTIRATION_DB_USER}
+      - REGISTIRATION_DB_PASSWORD=${REGISTIRATION_DB_PASSWORD}
+      - REGISTIRATION_DB_HOST=${REGISTIRATION_DB_HOST}
+      - REGISTIRATION_DB_REAL_HOST=${REGISTIRATION_DB_REAL_HOST}
+      - REGISTIRATION_DB_NAME=${REGISTIRATION_DB_NAME}
+      - JWT_SECRET=${JWT_SECRET}
+      - ENVIRONMENT=${ENVIRONMENT}
+      - PYTHONDONTWRITEBYTECODE=${PYTHONDONTWRITEBYTECODE}
+      - PYTHONUNBUFFERED=${PYTHONUNBUFFERED}
+    volumes:
+      - .:/app
+    networks:
+      - aygit-shared-network
+      - aygit-muhasebe-network
+
+networks:
+  aygit-shared-network:
+    external: true
+  aygit-muhasebe-network:
+    external: true
+    name: aygit-muhasebe-network

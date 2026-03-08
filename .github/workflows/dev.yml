@@ -1,0 +1,59 @@
+name: Deploy Pre-Registiration API Dev
+on:
+  push:
+    branches:
+      - dev
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: Dev
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v2
+      - name: Create .env file for local build
+        run: |
+          echo "DB_USER=${{ secrets.DB_USER }}" >> .env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+          echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
+          echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
+          echo "DB_REAL_HOST=${{ secrets.DB_REAL_HOST }}" >> .env
+          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+          echo "NOREPLY_EMAIL=${{ secrets.NOREPLY_EMAIL }}" >> .env
+          echo "NOREPLY_PASSWORD=${{ secrets.NOREPLY_PASSWORD }}" >> .env
+          echo "ENVIRONMENT=${{ vars.ENVIRONMENT }}" >> .env
+          echo "PYTHONDONTWRITEBYTECODE=${{ vars.PYTHONDONTWRITEBYTECODE }}" >> .env
+          echo "PYTHONUNBUFFERED=${{ vars.PYTHONUNBUFFERED }}" >> .env
+          echo "COMPOSE_PROJECT_NAME=${{ vars.COMPOSE_PROJECT_NAME }}" >> .env
+      - name: SSH into server and deploy
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd ~/aygit/muhasebe/admin-api-dev
+            echo "Pulling latest code..."
+            git pull origin dev
+            echo "Creating .env with dev settings..."
+            cat <<EOF > .env
+            DB_USER=${{ secrets.DB_USER }}
+            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+            DB_NAME=${{ secrets.DB_NAME }}
+            DB_HOST=${{ secrets.DB_HOST }}
+            DB_REAL_HOST=${{ secrets.DB_REAL_HOST }}
+            JWT_SECRET=${{ secrets.JWT_SECRET }}
+            NOREPLY_EMAIL=${{ secrets.NOREPLY_EMAIL }}
+            NOREPLY_PASSWORD=${{ secrets.NOREPLY_PASSWORD }}
+            ENVIRONMENT=${{ vars.ENVIRONMENT }}
+            PYTHONDONTWRITEBYTECODE=${{ vars.PYTHONDONTWRITEBYTECODE }}
+            PYTHONUNBUFFERED=${{ vars.PYTHONUNBUFFERED }}
+            COMPOSE_PROJECT_NAME=${{ vars.COMPOSE_PROJECT_NAME }}
+            EOF
+            echo "Stopping existing containers..."
+            docker compose -f docker-compose.dev.yml down
+            echo "Building services..."
+            docker compose -f docker-compose.dev.yml build
+            echo "Starting services..."
+            docker compose -f docker-compose.dev.yml up -d
