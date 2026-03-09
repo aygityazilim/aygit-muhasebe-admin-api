@@ -1,7 +1,11 @@
 from fastapi import Depends
 from sqlalchemy.orm import Session
-from shared.db import get_admin_db
+from shared.db import get_admin_db, get_registiration_db
 from services.auth import AuthService
+from services.registiration import RegistirationService
 
 def get_auth_service(db: Session = Depends(get_admin_db)) -> AuthService:
     return AuthService(db=db)
+
+def get_registiration_service(db: Session = Depends(get_registiration_db)) -> RegistirationService:
+    return RegistirationService(db=db)
