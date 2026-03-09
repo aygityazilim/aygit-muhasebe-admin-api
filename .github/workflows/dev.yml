@@ -1,4 +1,4 @@
-name: Deploy Pre-Registiration API Dev
+name: Deploy Admin API Dev
 on:
   push:
     branches:
@@ -14,17 +14,23 @@ jobs:
         uses: docker/setup-buildx-action@v2
       - name: Create .env file for local build
         run: |
-          echo "DB_USER=${{ secrets.DB_USER }}" >> .env
-          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
-          echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
-          echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
-          echo "DB_REAL_HOST=${{ secrets.DB_REAL_HOST }}" >> .env
+          echo "ADMIN_DB_USER=${{ secrets.ADMIN_DB_USER }}" >> .env
+          echo "ADMIN_DB_PASSWORD=${{ secrets.ADMIN_DB_PASSWORD }}" >> .env
+          echo "ADMIN_DB_NAME=${{ secrets.ADMIN_DB_NAME }}" >> .env
+          echo "ADMIN_DB_HOST=${{ secrets.ADMIN_DB_HOST }}" >> .env
+          echo "ADMIN_DB_REAL_HOST=${{ secrets.ADMIN_DB_REAL_HOST }}" >> .env
+          echo "REGISTIRATION_DB_USER=${{ secrets.REGISTIRATION_DB_USER }}" >> .env
+          echo "REGISTIRATION_DB_PASSWORD=${{ secrets.REGISTIRATION_DB_PASSWORD }}" >> .env
+          echo "REGISTIRATION_DB_NAME=${{ secrets.REGISTIRATION_DB_NAME }}" >> .env
+          echo "REGISTIRATION_DB_HOST=${{ secrets.REGISTIRATION_DB_HOST }}" >> .env
+          echo "REGISTIRATION_DB_REAL_HOST=${{ secrets.REGISTIRATION_DB_REAL_HOST }}" >> .env
           echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
           echo "NOREPLY_EMAIL=${{ secrets.NOREPLY_EMAIL }}" >> .env
           echo "NOREPLY_PASSWORD=${{ secrets.NOREPLY_PASSWORD }}" >> .env
           echo "ENVIRONMENT=${{ vars.ENVIRONMENT }}" >> .env
           echo "PYTHONDONTWRITEBYTECODE=${{ vars.PYTHONDONTWRITEBYTECODE }}" >> .env
           echo "PYTHONUNBUFFERED=${{ vars.PYTHONUNBUFFERED }}" >> .env
+          echo "PYTHONPATH=${{ vars.PYTHONPATH }}" >> .env
           echo "COMPOSE_PROJECT_NAME=${{ vars.COMPOSE_PROJECT_NAME }}" >> .env
       - name: SSH into server and deploy
         uses: appleboy/ssh-action@v1.0.0
@@ -38,17 +44,23 @@ jobs:
             git pull origin dev
             echo "Creating .env with dev settings..."
             cat <<EOF > .env
-            DB_USER=${{ secrets.DB_USER }}
-            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-            DB_NAME=${{ secrets.DB_NAME }}
-            DB_HOST=${{ secrets.DB_HOST }}
-            DB_REAL_HOST=${{ secrets.DB_REAL_HOST }}
+            ADMIN_DB_USER=${{ secrets.ADMIN_DB_USER }}
+            ADMIN_DB_PASSWORD=${{ secrets.ADMIN_DB_PASSWORD }}
+            ADMIN_DB_NAME=${{ secrets.ADMIN_DB_NAME }}
+            ADMIN_DB_HOST=${{ secrets.ADMIN_DB_HOST }}
+            ADMIN_DB_REAL_HOST=${{ secrets.ADMIN_DB_REAL_HOST }}
+            REGISTIRATION_DB_USER=${{ secrets.REGISTIRATION_DB_USER }}
+            REGISTIRATION_DB_PASSWORD=${{ secrets.REGISTIRATION_DB_PASSWORD }}
+            REGISTIRATION_DB_NAME=${{ secrets.REGISTIRATION_DB_NAME }}
+            REGISTIRATION_DB_HOST=${{ secrets.REGISTIRATION_DB_HOST }}
+            REGISTIRATION_DB_REAL_HOST=${{ secrets.REGISTIRATION_DB_REAL_HOST }}
             JWT_SECRET=${{ secrets.JWT_SECRET }}
             NOREPLY_EMAIL=${{ secrets.NOREPLY_EMAIL }}
             NOREPLY_PASSWORD=${{ secrets.NOREPLY_PASSWORD }}
             ENVIRONMENT=${{ vars.ENVIRONMENT }}
             PYTHONDONTWRITEBYTECODE=${{ vars.PYTHONDONTWRITEBYTECODE }}
             PYTHONUNBUFFERED=${{ vars.PYTHONUNBUFFERED }}
+            PYTHONPATH=${{ vars.PYTHONPATH }}
             COMPOSE_PROJECT_NAME=${{ vars.COMPOSE_PROJECT_NAME }}
             EOF
             echo "Stopping existing containers..."
