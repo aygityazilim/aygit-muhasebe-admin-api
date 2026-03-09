@@ -1,2 +1,2 @@
 from .response import ResponseSchema
-from .auth import LoginSchema
+from .auth import LoginSchemafrom .pre_registiration import PreRegistirationCreateSchema, PreRegistirationUpdateSchema, PreRegistirationResponseSchema
