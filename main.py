@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from shared.db import AdminBase, admin_engine
 from shared.utils import http_exception_handler, request_validation_exception_handler, internal_server_exception_handler
 from routers.auth import router as auth_router
+from routers.registiration import router as registiration_router
 
 AdminBase.metadata.create_all(bind=admin_engine)
 
