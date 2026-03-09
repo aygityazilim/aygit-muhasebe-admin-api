@@ -28,3 +28,4 @@ app.add_exception_handler(Exception, internal_server_exception_handler)
 
 
 app.include_router(auth_router)
+app.include_router(registiration_router)
