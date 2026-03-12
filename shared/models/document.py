@@ -8,8 +8,8 @@ class DocumentModel(RegistirationBaseModel):
     tax_plate = Column(String, nullable=True)
     other = Column(JSON, nullable=True)
 
-    pre_registiration_id = Column(Integer, ForeignKey("pre_registirations.id"), nullable=False)
-    pre_registiration = relationship("PreRegistirationModel", lazy="noload")
+    registiration_id = Column(Integer, ForeignKey("registirations.id"), nullable=False)
+    registiration = relationship("RegistirationModel", lazy="noload")
 
     def to_dict(self):
         return {
