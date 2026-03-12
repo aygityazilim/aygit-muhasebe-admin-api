@@ -11,7 +11,7 @@ class RegistirationRepository(BaseRepository[RegistirationModel]):
         super().__init__(model=RegistirationModel, db=db)
 
     def get(self, skip: int, limit: int, search: Optional[str]) -> PaginationSchema:
-        query = self.db.query(self.model)
+        query = self.db.query(self.model).filter(self.model.is_active == True)
         total_count = query.count()
 
         if search:
