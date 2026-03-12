@@ -75,7 +75,7 @@ async def create(
     return data
 
 
-@router.put("/{tracking_number}")
+@router.patch("/{tracking_number}")
 async def update(
     request: Request,
     response: Response,
@@ -98,7 +98,7 @@ async def delete(
     service: RegistirationService = Depends(get_registiration_service),
     _ = Depends(JWTBearerUtil())
 ):
-    await service.delete(tracking_number)
-    data = ResponseSchema(status=StatusCodeEnum.NO_CONTENT.value, success=True, error=None, data=None)
-    response.status_code = StatusCodeEnum.NO_CONTENT.value
+    data = await service.delete(tracking_number)
+    data = ResponseSchema(status=StatusCodeEnum.SUCCESS.value, success=True, error=None, data=data)
+    response.status_code = StatusCodeEnum.SUCCESS.value
     return data

@@ -9,6 +9,7 @@ from shared.repositories import (
 from shared.schemas import (
     RegistirationCreateSchema,
     RegistirationUpdateSchema,
+    RegistirationBaseResponseSchema,
     RegistirationResponseSchema,
     ContractVerificationResponseSchema,
     DocumentResponseSchema,
@@ -53,44 +54,82 @@ class RegistirationService:
 
         return data
 
-    async def create(self, payload: RegistirationCreateSchema) -> RegistirationResponseSchema:
+    async def create(self, payload: RegistirationCreateSchema) -> RegistirationBaseResponseSchema:
         try:
             tracking_number = str(random.randint(10**19, 10**20 - 1))
-            while self.repository.get_by_field("tracking_number", tracking_number) is not None:
+            while self.registiration_repository.get_by_field("tracking_number", tracking_number) is not None:
                 tracking_number = str(random.randint(10**19, 10**20 - 1))
 
             payload.tracking_number = tracking_number
             payload.status = RegistirationStatusEnum.PENDING.value
-            item = self.repository.create(payload.model_dump(mode="json", exclude_none=True))
+            item = self.registiration_repository.create(payload.model_dump(mode="json", exclude_none=True))
+            self.history_repository.create({
+                "note": "Oluşturuldu",
+                "status": RegistirationStatusEnum.PENDING.value,
+                "registiration_id": item.id
+            })
             self.db.commit()
-            return RegistirationResponseSchema(**item.to_dict())
+            return RegistirationBaseResponseSchema(**item.to_dict())
         except HTTPException:
             raise
         except Exception as e:
             self.db.rollback()
             raise e
 
-    async def update(self, tracking_number: str, payload: RegistirationUpdateSchema) -> RegistirationResponseSchema:
+    async def update(self, tracking_number: str, payload: RegistirationUpdateSchema) -> RegistirationBaseResponseSchema:
         try:
-            item = self.repository.get_by_field("tracking_number", tracking_number)
+            item = self.registiration_repository.get_by_field("tracking_number", tracking_number)
             if not item:
                 raise HTTPException(status_code=404, detail="Pre registration not found")
-            item = self.repository.update(item, payload.model_dump(mode="json", exclude_none=True))
+
+            changes = []
+            update_data = payload.model_dump(mode="json", exclude_none=True)
+
+            if "status" in update_data and update_data["status"] != item.status:
+                STATUS_LABELS = {
+                    "pending": "Bekliyor",
+                    "quoted": "Teklif Verildi",
+                    "done": "Tamamlandı"
+                }
+                old_label = STATUS_LABELS.get(item.status, item.status)
+                new_label = STATUS_LABELS.get(update_data["status"], update_data["status"])
+                changes.append(f"Durum: {old_label} → {new_label}")
+
+            if "name" in update_data and update_data["name"] != item.name:
+                changes.append(f"Ad: {item.name or '—'} → {update_data['name']}")
+
+            if "surname" in update_data and update_data["surname"] != item.surname:
+                changes.append(f"Soyad: {item.surname or '—'} → {update_data['surname']}")
+
+            if "phone" in update_data and update_data["phone"] != item.phone:
+                changes.append(f"Telefon: {item.phone} → {update_data['phone']}")
+
+            item = self.registiration_repository.update(item, update_data)
+
+            if changes:
+                self.history_repository.create({
+                    "note": ", ".join(changes),
+                    "status": item.status,
+                    "registiration_id": item.id
+                })
+
             self.db.commit()
-            return RegistirationResponseSchema(**item.to_dict())
+            return RegistirationBaseResponseSchema(**item.to_dict())
         except HTTPException:
             raise
         except Exception as e:
             self.db.rollback()
             raise e
 
-    async def delete(self, tracking_number: str):
+    async def delete(self, tracking_number: str) -> RegistirationBaseResponseSchema:
         try:
-            item = self.repository.get_by_field("tracking_number", tracking_number)
+            item = self.registiration_repository.get_by_field("tracking_number", tracking_number)
             if not item:
                 raise HTTPException(status_code=404, detail="Pre registration not found")
-            self.repository.delete(item.id)
+            data = RegistirationBaseResponseSchema(**item.to_dict())
+            self.registiration_repository.delete(item.id)
             self.db.commit()
+            return data
         except HTTPException:
             raise
         except Exception as e:

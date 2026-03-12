@@ -23,7 +23,7 @@ class RegistirationUpdateSchema(BaseModel):
     status: Optional[RegistirationStatusEnum] = Field(None)
 
 
-class RegistirationResponseSchema(BaseModel):
+class RegistirationBaseResponseSchema(BaseModel):
     id: int = Field(...)
     phone: str = Field(...)
     message: str = Field(...)
@@ -33,6 +33,9 @@ class RegistirationResponseSchema(BaseModel):
     status: RegistirationStatusEnum = Field(...)
     nes_info: Optional[Dict[str, Any]] = Field(None)
     created_at: datetime = Field(...)
+
+
+class RegistirationResponseSchema(RegistirationBaseResponseSchema):
     contracts: List[ContractVerificationResponseSchema] = Field(...)
     document: Optional[DocumentResponseSchema] = Field(None)
     history: List[RegistirationHistoryResponseSchema] = Field(...)

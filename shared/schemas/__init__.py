@@ -3,6 +3,7 @@ from .auth import LoginSchema
 from .registiration import (
     RegistirationCreateSchema,
     RegistirationUpdateSchema,
+    RegistirationBaseResponseSchema,
     RegistirationResponseSchema
 )
 from .contract_verification import ContractVerificationResponseSchema
