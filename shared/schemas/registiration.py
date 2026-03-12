@@ -1,6 +1,9 @@
 from pydantic import BaseModel, Field
-from typing import Optional, Any, Dict
+from typing import Optional, Any, Dict, List
 from shared.enums import RegistirationStatusEnum
+from shared.schemas.contract_verification import ContractVerificationResponseSchema
+from shared.schemas.document import DocumentResponseSchema
+from shared.schemas.registiration_history import RegistirationHistoryResponseSchema
 from datetime import datetime
 
 
@@ -30,3 +33,6 @@ class RegistirationResponseSchema(BaseModel):
     status: RegistirationStatusEnum = Field(...)
     nes_info: Optional[Dict[str, Any]] = Field(None)
     created_at: datetime = Field(...)
+    contracts: List[ContractVerificationResponseSchema] = Field(...)
+    document: Optional[DocumentResponseSchema] = Field(None)
+    history: List[RegistirationHistoryResponseSchema] = Field(...)
