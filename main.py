@@ -5,6 +5,7 @@ from shared.db import AdminBase, admin_engine
 from shared.utils import http_exception_handler, request_validation_exception_handler, internal_server_exception_handler
 from routers.auth import router as auth_router
 from routers.registiration import router as registiration_router
+from routers.contract_verification import router as contract_verification_router
 
 AdminBase.metadata.create_all(bind=admin_engine)
 
@@ -29,3 +30,4 @@ app.add_exception_handler(Exception, internal_server_exception_handler)
 
 app.include_router(auth_router)
 app.include_router(registiration_router)
+app.include_router(contract_verification_router)

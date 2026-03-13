@@ -16,7 +16,7 @@ from shared.schemas import (
     RegistirationHistoryResponseSchema,
     PaginationSchema
 )
-from shared.enums import RegistirationStatusEnum
+from shared.enums import RegistirationStatusEnum, ContractVerificationTypeEnum
 import random
 from typing import Optional
 
@@ -63,6 +63,18 @@ class RegistirationService:
             payload.tracking_number = tracking_number
             payload.status = RegistirationStatusEnum.PENDING.value
             item = self.registiration_repository.create(payload.model_dump(mode="json", exclude_none=True))
+
+            self.contract_verification_repository.create({
+                "type": ContractVerificationTypeEnum.ETK.value,
+                "link": "https://www.asmadanmuze.com/docs/etk-onay-metni.pdf",
+                "registiration_id": item.id
+            })
+            self.contract_verification_repository.create({
+                "type": ContractVerificationTypeEnum.KVKK.value,
+                "link": "https://www.sabancivakfi.org/i/assets/documents/Sabanci-Vakfi-KVKK-Aydinlatma-Metni-Tur.pdf",
+                "registiration_id": item.id
+            })
+
             self.history_repository.create({
                 "note": "Oluşturuldu",
                 "status": RegistirationStatusEnum.PENDING.value,
