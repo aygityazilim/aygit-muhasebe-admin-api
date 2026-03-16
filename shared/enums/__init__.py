@@ -2,3 +2,4 @@ from .error_message import ErrorMessageEnum
 from .status_code import StatusCodeEnum
 from .registiration_status import RegistirationStatusEnum
 from .contract_verification import ContractVerificationTypeEnum
+from .company_type import CompanyTypeEnum

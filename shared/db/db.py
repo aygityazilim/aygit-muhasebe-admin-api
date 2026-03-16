@@ -13,11 +13,18 @@ registiration_engine = create_engine(
     pool_pre_ping=True
 )
 
+aygit_engine = create_engine(
+    Config.AYGIT_DATABASE_URL,
+    pool_pre_ping=True
+)
+
 AdminSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=admin_engine)
 RegistirationSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=registiration_engine)
+AygitSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=aygit_engine)
 
 AdminBase = declarative_base()
 RegistirationBase = declarative_base()
+AygitBase = declarative_base()
 
 def get_admin_db():
     db = AdminSessionLocal()
@@ -28,6 +35,14 @@ def get_admin_db():
 
 def get_registiration_db():
     db = RegistirationSessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
+def get_aygit_db():
+    db = AygitSessionLocal()
     try:
         yield db
     finally:

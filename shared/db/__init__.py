@@ -1,1 +1,1 @@
-from .db import AdminBase, RegistirationBase, admin_engine, registiration_engine, get_admin_db, get_registiration_db
+from .db import AdminBase, RegistirationBase, AygitBase, admin_engine, registiration_engine, get_admin_db, get_registiration_db, get_aygit_db
