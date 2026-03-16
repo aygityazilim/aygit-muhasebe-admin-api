@@ -22,6 +22,10 @@ jobs:
           echo "REGISTIRATION_DB_PASSWORD=${{ secrets.REGISTIRATION_DB_PASSWORD }}" >> .env
           echo "REGISTIRATION_DB_NAME=${{ secrets.REGISTIRATION_DB_NAME }}" >> .env
           echo "REGISTIRATION_DB_HOST=${{ secrets.REGISTIRATION_DB_HOST }}" >> .env
+          echo "AYGIT_DB_USER=${{ secrets.AYGIT_DB_USER }}" >> .env
+          echo "AYGIT_DB_PASSWORD=${{ secrets.AYGIT_DB_PASSWORD }}" >> .env
+          echo "AYGIT_DB_NAME=${{ secrets.AYGIT_DB_NAME }}" >> .env
+          echo "AYGIT_DB_HOST=${{ secrets.AYGIT_DB_HOST }}" >> .env
           echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
           echo "NOREPLY_EMAIL=${{ secrets.NOREPLY_EMAIL }}" >> .env
           echo "NOREPLY_PASSWORD=${{ secrets.NOREPLY_PASSWORD }}" >> .env
@@ -49,6 +53,10 @@ jobs:
             REGISTIRATION_DB_PASSWORD=${{ secrets.REGISTIRATION_DB_PASSWORD }}
             REGISTIRATION_DB_NAME=${{ secrets.REGISTIRATION_DB_NAME }}
             REGISTIRATION_DB_HOST=${{ secrets.REGISTIRATION_DB_HOST }}
+            AYGIT_DB_USER=${{ secrets.AYGIT_DB_USER }}
+            AYGIT_DB_PASSWORD=${{ secrets.AYGIT_DB_PASSWORD }}
+            AYGIT_DB_NAME=${{ secrets.AYGIT_DB_NAME }}
+            AYGIT_DB_HOST=${{ secrets.AYGIT_DB_HOST }}
             JWT_SECRET=${{ secrets.JWT_SECRET }}
             NOREPLY_EMAIL=${{ secrets.NOREPLY_EMAIL }}
             NOREPLY_PASSWORD=${{ secrets.NOREPLY_PASSWORD }}
