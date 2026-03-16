@@ -34,6 +34,7 @@ class PackageService:
             raise HTTPException(status_code=404, detail="Package not found")
 
         return PackageResponseSchema(
+            id=item.id,
             key=item.key,
             name=item.name,
             description=item.description,
@@ -63,6 +64,7 @@ class PackageService:
             self.db.commit()
 
             return PackageResponseSchema(
+                id=package.id,
                 key=package.key,
                 name=package.name,
                 description=package.description,
@@ -114,6 +116,7 @@ class PackageService:
             self.db.commit()
 
             return PackageResponseSchema(
+                id=package.id,
                 key=package.key,
                 name=package.name,
                 description=package.description,
@@ -135,6 +138,7 @@ class PackageService:
                 raise HTTPException(status_code=404, detail="Package not found")
 
             data = PackageResponseSchema(
+                id=package.id,
                 key=package.key,
                 name=package.name,
                 description=package.description,

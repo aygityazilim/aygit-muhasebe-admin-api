@@ -15,6 +15,7 @@ class PackageUpdateSchema(BaseModel):
     resource_ids:  Optional[List[int]] = Field(None)
 
 class PackageResponseSchema(BaseModel):
+    id: int = Field(...)
     key: str = Field(...)
     name: str = Field(...)
     description: Optional[str] = Field(None)
