@@ -15,6 +15,7 @@ from .company import (
 )
 from .package import (
     PackageCreateSchema,
+    PackageUpdateSchema,
     PackageResponseSchema
 )
 from .resource import (

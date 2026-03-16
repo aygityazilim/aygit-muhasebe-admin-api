@@ -5,6 +5,7 @@ from services.auth import AuthService
 from services.registiration import RegistirationService
 from services.contract_verification import ContractVerificationService
 from services.resource import ResourceService
+from services.package import PackageService
 
 def get_auth_service(db: Session = Depends(get_admin_db)) -> AuthService:
     return AuthService(db=db)
@@ -17,3 +18,6 @@ def get_contract_verification_service(db: Session = Depends(get_registiration_db
 
 def get_resource_service(db: Session = Depends(get_aygit_db)) -> ResourceService:
     return ResourceService(db=db)
+
+def get_package_service(db: Session = Depends(get_aygit_db)) -> PackageService:
+    return PackageService(db=db)

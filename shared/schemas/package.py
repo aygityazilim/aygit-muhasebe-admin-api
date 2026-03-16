@@ -8,6 +8,12 @@ class PackageCreateSchema(BaseModel):
     description: Optional[str] = Field(None)
     resource_ids:  List[int] = Field(...)
 
+class PackageUpdateSchema(BaseModel):
+    key: Optional[str] = Field(None)
+    name: Optional[str] = Field(None)
+    description: Optional[str] = Field(None)
+    resource_ids:  Optional[List[int]] = Field(None)
+
 class PackageResponseSchema(BaseModel):
     key: str = Field(...)
     name: str = Field(...)
