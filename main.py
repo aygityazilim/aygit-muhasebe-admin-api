@@ -8,6 +8,7 @@ from routers.registiration import router as registiration_router
 from routers.contract_verification import router as contract_verification_router
 from routers.resource import router as resource_router
 from routers.package import router as package_router
+from routers.company import router as company_router
 
 AdminBase.metadata.create_all(bind=admin_engine)
 
@@ -35,3 +36,4 @@ app.include_router(registiration_router)
 app.include_router(contract_verification_router)
 app.include_router(resource_router)
 app.include_router(package_router)
+app.include_router(company_router)

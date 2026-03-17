@@ -6,9 +6,14 @@ from shared.schemas import (
     PackageResponseSchema,
     PaginationSchema,
     ListItemSchema,
+    ResourceResponseSchema,
+    PackageCreateSchema, 
+    PackageUpdateSchema
 )
-from shared.schemas.package import PackageCreateSchema, PackageUpdateSchema
-from shared.schemas.resource import ResourceResponseSchema
+from shared.enums import (
+    StatusCodeEnum,
+    ErrorMessageEnum
+)
 from typing import Optional
 
 
@@ -31,7 +36,7 @@ class PackageService:
     async def get_one(self, id: int) -> PackageResponseSchema:
         item = self.package_repository.get_by_id(id)
         if not item:
-            raise HTTPException(status_code=404, detail="Package not found")
+            raise HTTPException(status_code=StatusCodeEnum.NOT_FOUND.value, detail=ErrorMessageEnum.NOT_FOUND.value)
 
         return PackageResponseSchema(
             id=item.id,
@@ -83,7 +88,7 @@ class PackageService:
         try:
             package = self.package_repository.get_by_id(id)
             if not package:
-                raise HTTPException(status_code=404, detail="Package not found")
+                raise HTTPException(status_code=StatusCodeEnum.NOT_FOUND.value, detail=ErrorMessageEnum.NOT_FOUND.value)
 
             update_data = payload.model_dump(mode="json", exclude_none=True, exclude={"resource_ids"})
             if update_data:
@@ -135,7 +140,7 @@ class PackageService:
         try:
             package = self.package_repository.get_by_id(id)
             if not package:
-                raise HTTPException(status_code=404, detail="Package not found")
+                raise HTTPException(status_code=StatusCodeEnum.NOT_FOUND.value, detail=ErrorMessageEnum.NOT_FOUND.value)
 
             data = PackageResponseSchema(
                 id=package.id,

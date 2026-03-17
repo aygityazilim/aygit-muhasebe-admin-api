@@ -13,3 +13,4 @@ class ErrorMessageEnum(Enum):
     PAYMENT_EXCEEDS_PAYABLE_AMOUNT = "payment_exceeds_payable_amount"
     EMPLOYEE_ALREADY_HAS_SALARY = "employee_already_has_salary"
     BAD_REQUEST = "bad_request"
+    NOT_FOUND = "not_found"

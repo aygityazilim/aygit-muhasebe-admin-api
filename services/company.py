@@ -1,3 +1,152 @@
+from fastapi import HTTPException
+from sqlalchemy.orm import Session
+from shared.repositories import CompanyRepository, PackageRepository
+from shared.schemas import (
+    PaginationSchema, 
+    ListItemSchema,
+    CompanyCreateSchema, 
+    CompanyUpdateSchema, 
+    CompanyResponseSchema,
+    PackageResponseSchema,
+    ResourceResponseSchema
+) 
+from typing import Optional
+from slugify import slugify
+import random
+
+
+def _build_response(company) -> CompanyResponseSchema:
+    package_data = None
+    if company.package:
+        pkg = company.package
+        package_data = PackageResponseSchema(
+            id=pkg.id,
+            key=pkg.key,
+            name=pkg.name,
+            description=pkg.description,
+            resources=[
+                ResourceResponseSchema(**r.resource.to_dict())
+                for r in pkg.resources
+            ]
+        )
+
+    return CompanyResponseSchema(
+        id=company.id,
+        full_name=company.full_name,
+        short_name=company.short_name,
+        tax_number=company.tax_number,
+        tax_department=company.tax_department,
+        address=company.address,
+        slug=company.slug,
+        mersis_number=company.mersis_number,
+        type=company.type,
+        is_accounting_firm=company.is_accounting_firm,
+        package=package_data,
+        nes_username=company.nes_username,
+        environment=company.environment,
+        is_esmm_user=company.is_esmm_user,
+        is_emm_user=company.is_emm_user,
+    )
+
+
 class CompanyService:
-    def __init__(self):
-        pass
+    def __init__(self, db: Session):
+        self.db = db
+        self.company_repository = CompanyRepository(db=db)
+        self.package_repository = PackageRepository(db=db)
+
+    async def get(self, skip: int, limit: int, search: Optional[str]) -> PaginationSchema:
+        result = self.company_repository.get(skip, limit, search)
+        result.data = [_build_response(item) for item in result.data]
+        return result
+
+    async def get_list(self) -> list[ListItemSchema]:
+        items = self.company_repository.get_all()
+        return [
+            ListItemSchema(
+                id=item.id,
+                name=item.full_name,
+                description=item.short_name,
+                slug=item.slug,
+            )
+            for item in items
+        ]
+
+    async def get_one(self, id: int) -> CompanyResponseSchema:
+        item = self.company_repository.get_by_id(id)
+        if not item:
+            raise HTTPException(status_code=404, detail="Company not found")
+        return _build_response(item)
+
+    async def create(self, payload: CompanyCreateSchema) -> CompanyResponseSchema:
+        try:
+            existing = self.company_repository.get_by_field("tax_number", payload.tax_number)
+            if existing:
+                raise HTTPException(status_code=400, detail="Company with this tax number already exists")
+
+            slug = slugify(payload.full_name)
+            existing_company = self.company_repository.get_by_field("slug", slug)
+            while existing_company is not None:
+                new_slug = f"{slug}{random.randint(100000, 999999)}"
+                existing_company = self.company_repository.get_by_field("slug", new_slug)
+                if existing_company is None:
+                    slug = new_slug
+
+            data = payload.model_dump(mode="json")
+            data["slug"] = slug
+            if data.get("type"):
+                data["type"] = data["type"]
+
+            company = self.company_repository.create(data)
+            self.db.commit()
+            self.db.refresh(company)
+            return _build_response(company)
+        except HTTPException:
+            raise
+        except Exception as e:
+            self.db.rollback()
+            raise e
+
+    async def update(self, id: int, payload: CompanyUpdateSchema) -> CompanyResponseSchema:
+        try:
+            company = self.company_repository.get_by_id(id)
+            if not company:
+                raise HTTPException(status_code=404, detail="Company not found")
+
+            update_data = payload.model_dump(mode="json", exclude_none=True)
+
+            if "full_name" in update_data and update_data["full_name"] != company.full_name:
+                slug = slugify(update_data["full_name"])
+                existing_company = self.company_repository.get_by_field("slug", slug)
+                while existing_company is not None and existing_company.id != company.id:
+                    new_slug = f"{slug}{random.randint(100000, 999999)}"
+                    existing_company = self.company_repository.get_by_field("slug", new_slug)
+                    if existing_company is None or existing_company.id == company.id:
+                        slug = new_slug
+                update_data["slug"] = slug
+
+            company = self.company_repository.update(company, update_data)
+            self.db.commit()
+            self.db.refresh(company)
+            return _build_response(company)
+        except HTTPException:
+            raise
+        except Exception as e:
+            self.db.rollback()
+            raise e
+
+    async def delete(self, id: int) -> CompanyResponseSchema:
+        try:
+            company = self.company_repository.get_by_id(id)
+            if not company:
+                raise HTTPException(status_code=404, detail="Company not found")
+
+            data = _build_response(company)
+            self.company_repository.delete(company.id)
+            self.db.commit()
+            return data
+        except HTTPException:
+            raise
+        except Exception as e:
+            self.db.rollback()
+            raise e

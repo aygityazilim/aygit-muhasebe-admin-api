@@ -7,3 +7,4 @@ from .package import PackageModel
 from .resource import ResourceModel
 from .packages_resources import PackagesResourcesJoinModel
 from.user import UserModel
+from .currency import CurrencyModel

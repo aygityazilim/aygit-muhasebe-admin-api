@@ -14,6 +14,7 @@ class CompanyModel(AygitBaseModel):
     slug = Column(String, nullable=False, unique=True)
     mersis_number = Column(String, nullable=True)
     type = Column(String, nullable=False)
+    is_accounting_firm = Column(Boolean, nullable=True)
 
     nes_username = Column(String(100), nullable=True)
     nes_password = Column(String(100), nullable=True)
@@ -27,6 +28,9 @@ class CompanyModel(AygitBaseModel):
 
     package_id = Column(Integer, ForeignKey("packages.id"), nullable=True)
     package = relationship("PackageModel", lazy="select")
+
+    currency_id = Column(Integer, ForeignKey("currencies.id"), nullable=False)
+    currency = relationship("CurrencyModel", lazy="select")
 
     package_expires_at = Column(DateTime, nullable=True)
 

@@ -11,7 +11,9 @@ from .document import DocumentResponseSchema
 from .registiration_history import RegistirationHistoryResponseSchema
 from .pagination import PaginationSchema
 from .company import (
-    CompanyCreateSchema
+    CompanyCreateSchema,
+    CompanyUpdateSchema,
+    CompanyResponseSchema
 )
 from .package import (
     PackageCreateSchema,
