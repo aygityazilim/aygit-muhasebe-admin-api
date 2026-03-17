@@ -25,6 +25,8 @@ class Config:
     AYGIT_DATABASE_URL: str = f"postgresql://{AYGIT_DB_USER}:{AYGIT_DB_PASSWORD}@{AYGIT_DB_HOST}:5432/{AYGIT_DB_NAME}"
     AYGIT_DATABASE_REAL_URL: str = f"postgresql://{AYGIT_DB_USER}:{AYGIT_DB_PASSWORD}@{AYGIT_DB_REAL_HOST}:5432/{AYGIT_DB_NAME}"
 
+    NET_GSM_USER: str = os.getenv("NET_GSM_USER")
+    NET_GSM_PASSWORD: str = os.getenv("NET_GSM_PASSWORD")
 
     JWT_SECRET: str = os.getenv("JWT_SECRET")
     NOREPLY_EMAIL: str = os.getenv("NOREPLY_EMAIL")

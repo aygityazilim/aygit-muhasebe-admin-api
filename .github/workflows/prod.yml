@@ -26,6 +26,8 @@ jobs:
           echo "AYGIT_DB_PASSWORD=${{ secrets.AYGIT_DB_PASSWORD }}" >> .env
           echo "AYGIT_DB_NAME=${{ secrets.AYGIT_DB_NAME }}" >> .env
           echo "AYGIT_DB_HOST=${{ secrets.AYGIT_DB_HOST }}" >> .env
+          echo "NET_GSM_USER=${{ secrets.NET_GSM_USER }}" >> .env
+          echo "NET_GSM_PASSWORD=${{ secrets.NET_GSM_PASSWORD }}" >> .env
           echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
           echo "NOREPLY_EMAIL=${{ secrets.NOREPLY_EMAIL }}" >> .env
           echo "NOREPLY_PASSWORD=${{ secrets.NOREPLY_PASSWORD }}" >> .env
@@ -57,6 +59,8 @@ jobs:
             AYGIT_DB_PASSWORD=${{ secrets.AYGIT_DB_PASSWORD }}
             AYGIT_DB_NAME=${{ secrets.AYGIT_DB_NAME }}
             AYGIT_DB_HOST=${{ secrets.AYGIT_DB_HOST }}
+            NET_GSM_USER=${{ secrets.NET_GSM_USER }}
+            NET_GSM_PASSWORD=${{ secrets.NET_GSM_PASSWORD }}
             JWT_SECRET=${{ secrets.JWT_SECRET }}
             NOREPLY_EMAIL=${{ secrets.NOREPLY_EMAIL }}
             NOREPLY_PASSWORD=${{ secrets.NOREPLY_PASSWORD }}
