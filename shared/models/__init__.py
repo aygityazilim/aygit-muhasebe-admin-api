@@ -8,3 +8,5 @@ from .resource import ResourceModel
 from .packages_resources import PackagesResourcesJoinModel
 from.user import UserModel
 from .currency import CurrencyModel
+from .ticket import TicketModel
+from .ticket_message import TicketMessageModel
