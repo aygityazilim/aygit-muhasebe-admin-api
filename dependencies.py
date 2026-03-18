@@ -7,6 +7,7 @@ from services.contract_verification import ContractVerificationService
 from services.resource import ResourceService
 from services.package import PackageService
 from services.company import CompanyService
+from services.ticket import TicketService
 
 def get_auth_service(db: Session = Depends(get_admin_db)) -> AuthService:
     return AuthService(db=db)
@@ -25,3 +26,6 @@ def get_package_service(db: Session = Depends(get_aygit_db)) -> PackageService:
 
 def get_company_service(db: Session = Depends(get_aygit_db)) -> CompanyService:
     return CompanyService(db=db)
+
+def get_ticket_service(db: Session = Depends(get_aygit_db)) -> TicketService:
+    return TicketService(db=db)

@@ -24,3 +24,12 @@ from .resource import (
     ResourceResponseSchema
 )
 from .list_item import ListItemSchema
+from .ticket_message import (
+    TicketMessageCreateSchema,
+    TicketMessageResponseSchema
+)
+from .ticket import (
+    TicketCreateSchema,
+    TicketMessageResponseSchema,
+    TicketResponseSchema
+)

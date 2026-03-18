@@ -6,3 +6,5 @@ from .user import UserRepository
 from .company import CompanyRepository
 from .package import PackageRepository
 from .resource import ResourceRepository
+from .ticket import TicketRepository
+from .ticket_message import TicketMessageRepository
