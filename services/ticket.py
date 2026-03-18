@@ -1,3 +1,4 @@
+from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from shared.repositories import (
     TicketRepository,
@@ -11,7 +12,9 @@ from shared.schemas import (
 )
 from shared.enums import (
     TicketMessageTypeEnum,
-    TicketStatusEnum
+    TicketStatusEnum,
+    StatusCodeEnum,
+    ErrorMessageEnum
 )
 from datetime import datetime
 from typing import Optional, List
@@ -24,36 +27,76 @@ class TicketService:
         self.ticket_message_repository = TicketMessageRepository(db=db)
 
     async def get(self, skip: int, limit: int, search: Optional[str]) -> PaginationSchema[TicketResponseSchema]:
-        data = self.ticket_repository.get(skip, limit, search)
-        return data
+        try:
+            data = self.ticket_repository.get(skip, limit, search)
+            return data
+        except HTTPException:
+            raise
+        except Exception as e:
+            self.db.rollback()
+            raise e
 
     async def get_one(self, uuid: str) -> TicketResponseSchema:
-        ticket = self.ticket_repository.get_by_field("uuid", uuid)
-        data = TicketResponseSchema(**ticket.to_dict())
-        return data
+        try:
+            ticket = self.ticket_repository.get_by_field("uuid", uuid)
+            if not ticket:
+                raise HTTPException(status_code=StatusCodeEnum.NOT_FOUND.value, detail=ErrorMessageEnum.NOT_FOUND.value)
+            data = TicketResponseSchema(**ticket.to_dict())
+            return data
+        except HTTPException:
+            raise
+        except Exception as e:
+            self.db.rollback()
+            raise e
 
     async def get_messages(self, uuid: str) -> List[TicketMessageResponseSchema]:
-        ticket = self.ticket_repository.get_by_field("uuid", uuid)
-        data = self.ticket_message_repository.get_by_ticket(ticket.id)
-        return data
+        try:
+            ticket = self.ticket_repository.get_by_field("uuid", uuid)
+            if not ticket:
+                raise HTTPException(status_code=StatusCodeEnum.NOT_FOUND.value, detail=ErrorMessageEnum.NOT_FOUND.value)
+            data = self.ticket_message_repository.get_by_ticket(ticket.id)
+            return data
+        except HTTPException:
+            raise
+        except Exception as e:
+            self.db.rollback()
+            raise e
 
     async def answer(self, uuid: str, ticket_message_create_schema: TicketMessageCreateSchema) -> TicketResponseSchema:
-        ticket = self.ticket_repository.get_by_field("uuid", uuid)
-        created_message = self.ticket_message_repository.create({
-            "content": ticket_message_create_schema.content,
-            "type": TicketMessageTypeEnum.ANSWER.value,
-            "ticket_id": ticket.id
-        })
-        self.ticket_repository.update(ticket, {
-            "last_message_id": created_message.id,
-            "last_message_date": datetime.now(),
-            "status": TicketStatusEnum.ANSWERED.value
-        })
-        data = TicketResponseSchema(**ticket.to_dict())
-        return data
+        try:
+            ticket = self.ticket_repository.get_by_field("uuid", uuid)
+            if not ticket:
+                raise HTTPException(status_code=StatusCodeEnum.NOT_FOUND.value, detail=ErrorMessageEnum.NOT_FOUND.value)
+            created_message = self.ticket_message_repository.create({
+                "content": ticket_message_create_schema.content,
+                "type": TicketMessageTypeEnum.ANSWER.value,
+                "ticket_id": ticket.id
+            })
+            self.ticket_repository.update(ticket, {
+                "last_message_id": created_message.id,
+                "last_message_date": datetime.now(),
+                "status": TicketStatusEnum.ANSWERED.value
+            })
+            self.db.commit()
+            data = TicketResponseSchema(**ticket.to_dict())
+            return data
+        except HTTPException:
+            raise
+        except Exception as e:
+            self.db.rollback()
+            raise e
 
     async def update_status(self, uuid: str, status: TicketStatusEnum) -> TicketResponseSchema:
-        ticket = self.ticket_repository.get_by_field("uuid", uuid)
-        self.ticket_repository.update(ticket, {"status": status.value})
-        data = TicketResponseSchema(**ticket.to_dict())
-        return data
+        try:
+            ticket = self.ticket_repository.get_by_field("uuid", uuid)
+            if not ticket:
+                raise HTTPException(status_code=StatusCodeEnum.NOT_FOUND.value, detail=ErrorMessageEnum.NOT_FOUND.value)
+            self.ticket_repository.update(ticket, {"status": status.value})
+            self.db.commit()
+            data = TicketResponseSchema(**ticket.to_dict())
+            return data
+        except HTTPException:
+            raise
+        except Exception as e:
+            self.db.rollback()
+            raise e
