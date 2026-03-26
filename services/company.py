@@ -39,15 +39,30 @@ def _build_response(company) -> CompanyResponseSchema:
             ]
         )
 
+    accounting_company_data = None
+    if company.accounting_company:
+        accounting_company_data = CompanyResponseSchema(
+            **{k: v for k, v in company.accounting_company.to_dict().items() if k in CompanyResponseSchema.model_fields}
+        )
+
     return CompanyResponseSchema(
         id=company.id,
-        full_name=company.full_name,
-        short_name=company.short_name,
+        logo=company.logo,
+        title=company.title,
         tax_number=company.tax_number,
         tax_department=company.tax_department,
         address=company.address,
+        district=company.district,
+        city=company.city,
+        country=company.country,
+        name=company.name,
+        surname=company.surname,
+        postal_code=company.postal_code,
+        phone=company.phone,
+        fax=company.fax,
+        mail=company.mail,
+        web_site=company.web_site,
         slug=company.slug,
-        mersis_number=company.mersis_number,
         type=company.type,
         is_accounting_firm=company.is_accounting_firm,
         package=package_data,
@@ -55,6 +70,7 @@ def _build_response(company) -> CompanyResponseSchema:
         environment=company.environment,
         is_esmm_user=company.is_esmm_user,
         is_emm_user=company.is_emm_user,
+        accounting_company=accounting_company_data,
     )
 
 
@@ -76,8 +92,8 @@ class CompanyService:
         return [
             ListItemSchema(
                 id=item.id,
-                name=item.full_name,
-                description=item.short_name,
+                name=item.title,
+                description=item.city,
                 slug=item.slug,
             )
             for item in items
@@ -95,7 +111,7 @@ class CompanyService:
             if existing:
                 raise HTTPException(status_code=400, detail="Company with this tax number already exists")
 
-            slug = slugify(payload.full_name)
+            slug = slugify(payload.title)
             existing_company = self.company_repository.get_by_field("slug", slug)
             while existing_company is not None:
                 new_slug = f"{slug}{random.randint(100000, 999999)}"
@@ -126,8 +142,8 @@ class CompanyService:
 
             update_data = payload.model_dump(mode="json", exclude_none=True)
 
-            if "full_name" in update_data and update_data["full_name"] != company.full_name:
-                slug = slugify(update_data["full_name"])
+            if "title" in update_data and update_data["title"] != company.title:
+                slug = slugify(update_data["title"])
                 existing_company = self.company_repository.get_by_field("slug", slug)
                 while existing_company is not None and existing_company.id != company.id:
                     new_slug = f"{slug}{random.randint(100000, 999999)}"
@@ -168,7 +184,7 @@ class CompanyService:
             return [
                 ListItemSchema(
                     id=company.id,
-                    name=company.full_name,
+                    name=company.title,
                     slug=company.slug,
                     image=company.logo
                 ) for company in data

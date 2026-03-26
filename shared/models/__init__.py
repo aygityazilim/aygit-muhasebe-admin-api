@@ -14,3 +14,4 @@ from .currency import CurrencyModel
 from .ticket import TicketModel
 from .ticket_message import TicketMessageModel
 from .users_resources import UsersResourcesJoinModel
+from .sector import SectorModel

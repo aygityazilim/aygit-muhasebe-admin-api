@@ -16,8 +16,8 @@ class CompanyRepository(BaseRepository[CompanyModel]):
 
         if search:
             query = query.filter(
-                (self.model.full_name.ilike(f"%{search}%")) |
-                (self.model.short_name.ilike(f"%{search}%")) |
+                (self.model.title.ilike(f"%{search}%")) |
+                (self.model.city.ilike(f"%{search}%")) |
                 (self.model.tax_number.ilike(f"%{search}%")) |
                 (self.model.slug.ilike(f"%{search}%"))
             )
@@ -43,8 +43,8 @@ class CompanyRepository(BaseRepository[CompanyModel]):
         if search:
             query = query.filter(
                 or_(
-                    self.model.full_name.ilike(f"%{search}%"),
-                    self.model.short_name.ilike(f"%{search}%")
+                    self.model.title.ilike(f"%{search}%"),
+                    self.model.city.ilike(f"%{search}%")
                 )
             )        
         data = query.all()
