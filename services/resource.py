@@ -13,13 +13,7 @@ class ResourceService:
         return [
             ListItemSchema(
                 id=item.id,
-                name=item.key,
-                description=item.path,
-                metadata={
-                    "sort_order": item.sort_order,
-                    "is_menu": item.is_menu,
-                    "parent_id": item.parent_id,
-                }
+                name=item.key,              
             )
             for item in items
         ]
