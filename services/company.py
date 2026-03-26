@@ -10,7 +10,7 @@ from shared.schemas import (
     PackageResponseSchema,
     ResourceResponseSchema
 ) 
-from typing import Optional
+from typing import Optional, List
 from slugify import slugify
 import random
 
@@ -60,7 +60,7 @@ class CompanyService:
         result.data = [_build_response(item) for item in result.data]
         return result
 
-    async def get_list(self) -> list[ListItemSchema]:
+    async def get_list(self) -> List[ListItemSchema]:
         items = self.company_repository.get_all()
         return [
             ListItemSchema(
@@ -149,4 +149,20 @@ class CompanyService:
             raise
         except Exception as e:
             self.db.rollback()
+            raise e
+        
+    async def get_accounting_companies(self, search: Optional[str]) -> List[ListItemSchema]:
+        try:
+            data = self.company_repository.get_accounting_companies(search)
+            return [
+                ListItemSchema(
+                    id=company.id,
+                    name=company.full_name,
+                    slug=company.slug,
+                    image=company.logo
+                ) for company in data
+            ]
+        except HTTPException:
+            raise
+        except Exception as e:
             raise e

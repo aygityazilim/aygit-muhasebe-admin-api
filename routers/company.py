@@ -43,6 +43,20 @@ async def get_list(
     return data
 
 
+@router.get("/accounting")
+async def get_accounting_companies(
+    request: Request,
+    response: Response,
+    search: Optional[str] = Query(None),
+    service: CompanyService = Depends(get_company_service),
+    _ = Depends(JWTBearerUtil())
+):
+    data = await service.get_accounting_companies(search)
+    data = ResponseSchema(status=StatusCodeEnum.SUCCESS.value, success=True, error=None, data=data)
+    response.status_code = StatusCodeEnum.SUCCESS.value
+    return data
+
+
 @router.get("/{id}")
 async def get_one(
     request: Request,

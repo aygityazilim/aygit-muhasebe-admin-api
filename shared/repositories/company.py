@@ -1,8 +1,9 @@
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 from shared.repositories.base import BaseRepository
 from shared.models import CompanyModel
 from shared.schemas import PaginationSchema
-from typing import Optional
+from typing import Optional, List
 
 
 class CompanyRepository(BaseRepository[CompanyModel]):
@@ -36,3 +37,15 @@ class CompanyRepository(BaseRepository[CompanyModel]):
             total_pages=total_pages,
             data=data
         )
+    
+    def get_accounting_companies(self, search: Optional[str]) -> List[CompanyModel]:
+        query = self.db.query(self.model).filter(self.model.is_active == True, self.model.is_accounting_firm == True)
+        if search:
+            query = query.filter(
+                or_(
+                    self.model.full_name.ilike(f"%{search}%"),
+                    self.model.short_name.ilike(f"%{search}%")
+                )
+            )        
+        data = query.all()
+        return data

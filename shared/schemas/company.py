@@ -15,6 +15,7 @@ class CompanyCreateSchema(BaseModel):
     currency_id: int = Field(...)
     package_id: int = Field(...)
     is_accounting_firm: bool = Field(False)
+    accounting_company_id: Optional[int] = Field(None)
 
 
 class CompanyUpdateSchema(BaseModel):
@@ -28,6 +29,7 @@ class CompanyUpdateSchema(BaseModel):
     package_id: Optional[int] = Field(None)
     is_accounting_firm: Optional[bool] = Field(None)
     currency_id: Optional[int] = Field(None)
+    accounting_company_id: Optional[int] = Field(None)
 
 
 class CompanyResponseSchema(BaseModel):
@@ -46,3 +48,4 @@ class CompanyResponseSchema(BaseModel):
     environment: Optional[str] = Field(None)
     is_esmm_user: Optional[bool] = Field(None)
     is_emm_user: Optional[bool] = Field(None)
+    accounting_company: Optional['CompanyResponseSchema'] = Field(None)

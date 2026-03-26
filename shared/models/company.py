@@ -34,6 +34,8 @@ class CompanyModel(AygitBaseModel):
 
     package_expires_at = Column(DateTime, nullable=True)
 
+    accounting_company_id = Column(Integer, ForeignKey("companies.id"), nullable=True)
+    accounting_company = relationship("CompanyModel", lazy="select")
 
     def to_dict(self):
         return {
@@ -49,7 +51,7 @@ class CompanyModel(AygitBaseModel):
             "mersis_number": self.mersis_number,
             "currency": self.currency.to_dict(),
             "type": self.type,
-            "accountant": self.accountant.to_dict() if self.accountant else None,
+            "accounting_company": self.accounting_company.to_dict() if self.accounting_company else None,
             "nes_username": self.nes_username,
             "environment": self.environment,
             "is_esmm_user": self.is_esmm_user,
