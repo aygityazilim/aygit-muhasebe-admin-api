@@ -1,7 +1,11 @@
 from fastapi import APIRouter, Request, Response, Depends, Query
 from shared.enums import StatusCodeEnum
 from shared.schemas import ResponseSchema
-from shared.schemas.company import CompanyCreateSchema, CompanyUpdateSchema
+from shared.schemas.company import (
+    CompanyCreateSchema, 
+    CompanyUpdateSchema,
+    CreateCompanyUserSchema
+)
 from shared.utils import JWTBearerUtil
 from services.company import CompanyService
 from dependencies import get_company_service
@@ -111,4 +115,17 @@ async def delete(
     data = await service.delete(id)
     data = ResponseSchema(status=StatusCodeEnum.SUCCESS.value, success=True, error=None, data=data)
     response.status_code = StatusCodeEnum.SUCCESS.value
+    return data
+
+@router.post("/user")
+async def create_user(
+    request: Request,
+    response: Response,
+    payload: CreateCompanyUserSchema,
+    service: CompanyService = Depends(get_company_service),
+    _ = Depends(JWTBearerUtil())
+):
+    data = await service.create_user(payload)
+    data = ResponseSchema(status=StatusCodeEnum.CREATED.value, success=True, error=None, data=data)
+    response.status_code = StatusCodeEnum.CREATED.value
     return data

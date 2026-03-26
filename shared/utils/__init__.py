@@ -2,3 +2,4 @@ from .exception import http_exception_handler, request_validation_exception_hand
 from .password import PasswordUtil
 from .jwt_bearer import JWTBearerUtil
 from .net_gsm import NETGSMUtils
+from .email import EmailUtils

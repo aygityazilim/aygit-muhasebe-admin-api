@@ -1,6 +1,6 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
-from shared.repositories import CompanyRepository, PackageRepository
+from shared.repositories import CompanyRepository, PackageRepository, AygitUserRepository, UsersResourcesJoinRepository
 from shared.schemas import (
     PaginationSchema, 
     ListItemSchema,
@@ -8,8 +8,17 @@ from shared.schemas import (
     CompanyUpdateSchema, 
     CompanyResponseSchema,
     PackageResponseSchema,
-    ResourceResponseSchema
+    ResourceResponseSchema,
+    CreateCompanyUserSchema
 ) 
+from shared.enums import (
+    StatusCodeEnum,
+    ErrorMessageEnum
+)
+from shared.utils import (
+    PasswordUtil,
+    EmailUtils
+)
 from typing import Optional, List
 from slugify import slugify
 import random
@@ -54,6 +63,8 @@ class CompanyService:
         self.db = db
         self.company_repository = CompanyRepository(db=db)
         self.package_repository = PackageRepository(db=db)
+        self.aygit_user_repository = AygitUserRepository(db=db)
+        self.users_resources_join_repository = UsersResourcesJoinRepository(db=db)
 
     async def get(self, skip: int, limit: int, search: Optional[str]) -> PaginationSchema:
         result = self.company_repository.get(skip, limit, search)
@@ -165,4 +176,25 @@ class CompanyService:
         except HTTPException:
             raise
         except Exception as e:
+            raise e
+
+    async def create_user(self, payload: CreateCompanyUserSchema) -> None:
+        try:
+            existing_user = self.aygit_user_repository.get_by_field("email", payload.email)
+            if existing_user:
+                raise HTTPException(status_code=StatusCodeEnum.BAD_REQUEST.value, detail=ErrorMessageEnum.USER_EXISTS.value)
+            password = PasswordUtil.generate_password(12)
+            payload.password = PasswordUtil.hash(password)
+            company = self.company_repository.get_by_id(payload.company_id)
+            user = self.aygit_user_repository.create(payload.model_dump(mode="json"))
+            users_resources = []
+            for pr in company.package.resources:
+                users_resources.append({"user_id": user.id, "resource_id": pr.resource_id})
+            self.users_resources_join_repository.bulk_create(users_resources)
+            await EmailUtils.send_email("user.html", "Aygıt Muhasebe Giriş Bilgileri", payload.email, email=payload.email, name=user.name, surname=user.surname, password=password)
+            self.db.commit()
+        except HTTPException:
+            raise
+        except Exception as e:
+            self.db.rollback()
             raise e

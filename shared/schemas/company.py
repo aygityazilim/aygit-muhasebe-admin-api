@@ -1,6 +1,9 @@
 from pydantic import BaseModel, Field
 from typing import Optional
-from shared.enums import CompanyTypeEnum
+from shared.enums import (
+    CompanyTypeEnum,
+    RoleEnum
+)
 from shared.schemas.package import PackageResponseSchema
 
 
@@ -49,3 +52,12 @@ class CompanyResponseSchema(BaseModel):
     is_esmm_user: Optional[bool] = Field(None)
     is_emm_user: Optional[bool] = Field(None)
     accounting_company: Optional['CompanyResponseSchema'] = Field(None)
+
+class CreateCompanyUserSchema(BaseModel):    
+    name: str = Field(...)
+    surname: str = Field(...)
+    email: str = Field(...)
+    phone: str = Field(...)
+    company_id: int = Field(...)
+    role: Optional[RoleEnum] = Field(RoleEnum.ACCOUNT_OWNER)
+    password: Optional[str] = Field(None)

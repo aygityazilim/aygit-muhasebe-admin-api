@@ -13,7 +13,8 @@ from .pagination import PaginationSchema
 from .company import (
     CompanyCreateSchema,
     CompanyUpdateSchema,
-    CompanyResponseSchema
+    CompanyResponseSchema,
+    CreateCompanyUserSchema
 )
 from .package import (
     PackageCreateSchema,
