@@ -1,6 +1,7 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from shared.repositories import CompanyRepository, PackageRepository, AygitUserRepository, UsersResourcesJoinRepository
+from shared.models import UserSettingsModel
 from shared.schemas import (
     PaginationSchema, 
     ListItemSchema,
@@ -207,6 +208,20 @@ class CompanyService:
             for pr in company.package.resources:
                 users_resources.append({"user_id": user.id, "resource_id": pr.resource_id})
             self.users_resources_join_repository.bulk_create(users_resources)
+            settings = UserSettingsModel(
+                user_id=user.id,
+                email_notifications={
+                    "invoice": False, "payment": False, "report": False,
+                    "counterparty": False, "stock": False, "advertise": False
+                },
+                mobile_notifications={
+                    "invoice": False, "payment": False, "report": False,
+                    "counterparty": False, "stock": False, "advertise": False
+                },
+                language="TR"
+            )
+            self.db.add(settings)
+            self.db.flush()
             await EmailUtils.send_email("user.html", "Aygıt Muhasebe Giriş Bilgileri", payload.email, email=payload.email, name=user.name, surname=user.surname, password=password)
             self.db.commit()
         except HTTPException:
